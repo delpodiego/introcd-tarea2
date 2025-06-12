@@ -1,5 +1,5 @@
 # Importo los módulos a utilizar
-from utils.data_tranformation import transform_speeches
+from utils.data_transformation import transform_speeches
 from utils.data_splitting import get_train_test
 from research.visualizaciones_train_test import pie_chart, histogram
 

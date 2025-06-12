@@ -3,3 +3,5 @@
 .venv/
 img/
 data/speeches.csv
+__pycache__/
+*.py[cod]
