@@ -11,10 +11,10 @@ def clean_text(df, column_name):
     # Convertir a minúsculas
     result = result.str.lower()
 
-    # TODO: completar signos de puntuación faltantes
-    #   Estaría dejando el ' puesto que pueden existir palabras como don't
+    # Signos de puntuación faltantes
     for punc in [
         "[", r"\n", ",", ":", "?",
+        # Agregados por nosotros
         '!', '$', '%', '&', '(', ')', '*', '+', '-', '.', '/', ';', '@', '[', r'\r'
     ]:
         result = result.str.replace(punc, " ")

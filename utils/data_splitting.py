@@ -3,14 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
-def get_train_test(csv_path: str) -> tuple[pd.DataFrame, pd.DataFrame]:
-    # %% Leemos el CSV
-    # csv_path = r"data/us_2020_election_speeches.csv"
-    df = pd.read_csv(
-        filepath_or_buffer=csv_path,
-        delimiter=","
-    )
-
+def get_train_test(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     # %% Cantidad de discursos por candidato
     n_speeches = df.groupby("speaker").size().sort_values(ascending=False)
 
