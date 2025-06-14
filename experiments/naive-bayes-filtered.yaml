@@ -1,0 +1,12 @@
+experiment_name: naive-bayes-filtered
+model: naive-bayes
+grid_search:
+  alpha: [0.1, 0.5, 1.0]
+  fit_prior: [True, False]
+scoring: [f1_macro, accuracy, recall_macro, precision_macro]
+refit: f1_macro
+data: filtered # filtered | candidates | sentences
+speakers: 
+  - Joe Biden
+  - Donald Trump
+  - Mike Pence

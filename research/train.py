@@ -1,9 +1,8 @@
 # %%
 import start
 
-from utils.data_transformation import transform_speeches
 from utils.data_splitting import get_train_test
-from utils.data_transformation import tf_idf
+from utils.data_transformation import tf_idf, transform_speeches
 
 # %%
 df = transform_speeches("data/us_2020_election_speeches.csv")
@@ -14,8 +13,8 @@ df = df.groupby(df.index).agg(text=("text", " ".join), speaker=("speaker", "firs
 # %%
 X_train, X_test, y_train, y_test = get_train_test(df)
 # %%
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 plt.hist(y_train)
 # %%
@@ -52,7 +51,7 @@ accuracy_score(y_test, y_test_pred)
 # %%
 ConfusionMatrixDisplay.from_predictions(y_test, y_test_pred)
 # %%
-from sklearn.metrics import recall_score, precision_score
+from sklearn.metrics import precision_score, recall_score
 from sklearn.model_selection import cross_val_score
 
 model = MultinomialNB()
