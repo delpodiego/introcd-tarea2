@@ -84,7 +84,7 @@ def bag_of_words(corpus: list[str] | pd.Series) -> csr_matrix:
     return matrix
 
 
-def tf_idf(corpus: list[str] | pd.Series, stop_words: str = None, use_idf: bool = False, ngram_range: tuple = (1, 1)) -> csr_matrix:
+def tf_idf(corpus: list[str] | pd.Series, stop_words: str | None = None, use_idf: bool = False, ngram_range: tuple = (1, 1)) -> csr_matrix:
     # %% Inicio el vectorizador
     vectorizer = TfidfVectorizer(stop_words=stop_words, use_idf=use_idf, ngram_range=ngram_range)
 
@@ -92,7 +92,7 @@ def tf_idf(corpus: list[str] | pd.Series, stop_words: str = None, use_idf: bool 
     matrix = vectorizer.fit_transform(corpus)
 
     # %% Objeto devuelto por la función
-    return matrix
+    return vectorizer, matrix
 
 
 def principal_component_analysis(matrix: csr_matrix, n_components: int = 2):
