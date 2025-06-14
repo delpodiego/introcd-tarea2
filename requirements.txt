@@ -1,3 +1,7 @@
 pandas
 scikit-learn
 matplotlib
+matplotlib
+ipykernel
+
+ruff # formatting y linting
