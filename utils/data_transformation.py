@@ -1,7 +1,10 @@
 # Importo los módulos a utilizar
 import pandas as pd
 import sys
-from utils.data_clean import list_of_tuples
+from scipy.sparse import csr_matrix
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.decomposition import PCA
+from utils.data_clean import clean_text, list_of_tuples
 
 
 def transform_speeches(csv_path: str) -> pd.DataFrame:
@@ -63,5 +66,44 @@ def transform_speeches(csv_path: str) -> pd.DataFrame:
     }
     df["speaker"] = (df["speaker"].map(names).fillna(df["speaker"]))
 
+    # %% Limpio los discursos
+    df["text"] = clean_text(text=df["text"])
+
     # %% Objeto devuelto por la función
-    return df
+    return df[["speaker", "text"]]
+
+
+def bag_of_words(corpus: list[str] | pd.Series) -> csr_matrix:
+    # %% Inicio el vectorizador
+    vectorizer = CountVectorizer()
+
+    # %% Ajustar y transformar el corpus
+    matrix = vectorizer.fit_transform(corpus)
+
+    # %% Objeto devuelto por la función
+    return matrix
+
+
+def tf_idf(corpus: list[str] | pd.Series, stop_words: str = None, use_idf: bool = False, ngram_range: tuple = (1, 1)) -> csr_matrix:
+    # %% Inicio el vectorizador
+    vectorizer = TfidfVectorizer(stop_words=stop_words, use_idf=use_idf, ngram_range=ngram_range)
+
+    # %% Ajustar y transformar el corpus
+    matrix = vectorizer.fit_transform(corpus)
+
+    # %% Objeto devuelto por la función
+    return matrix
+
+
+def principal_component_analysis(matrix: csr_matrix, n_components: int = 2):
+    # %% Aplicamos PCA a la matriz
+    return PCA(n_components=n_components).fit_transform(matrix.toarray())
+
+def pca_explained_variance_ratio(matrix: csr_matrix, n_components: int = 2):
+    # %% Aplicamos PCA a la matriz
+    pca = PCA(n_components=n_components)
+    pca.fit(matrix.toarray())
+
+    # %% Objeto devuelto por la función
+    return pca.explained_variance_ratio_
+

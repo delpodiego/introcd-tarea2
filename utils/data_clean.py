@@ -4,9 +4,9 @@ import string
 import pandas as pd
 
 
-def clean_text(df, column_name):
+def clean_text(text: list | pd.Series) -> str:
     # Eliminar primeras palabras hasta el primer "\n"
-    result = df[column_name].str.replace(r"^[^\n]*\n", "", regex=True)
+    result = text.str.replace(r"^[^\n]*\n", "", regex=True)
 
     # Convertir a minúsculas
     result = result.str.lower()
