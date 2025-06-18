@@ -7,7 +7,7 @@ from sklearn.decomposition import PCA
 from utils.data_clean import clean_text, list_of_tuples
 
 
-def transform_speeches(csv_path: str) -> pd.DataFrame:
+def transform_speeches(csv_path: str, speakers: list, per_sentence: bool) -> pd.DataFrame:
     # %% Leemos el CSV
     df = pd.read_csv(
         filepath_or_buffer=csv_path,
@@ -69,8 +69,18 @@ def transform_speeches(csv_path: str) -> pd.DataFrame:
     # %% Limpio los discursos
     df["text"] = clean_text(text=df["text"])
 
+    # %% Solo quiero speaker y text
+    df = df[["speaker", "text"]]
+
+    # %% Para verlo por discurso entero
+    if not per_sentence:
+        df = df.groupby(df.index).agg(text=("text", " ".join), speaker=("speaker", "first"))
+
+    # %% Oradores filtrados
+    df = df[df["speaker"].isin(speakers)]
+
     # %% Objeto devuelto por la función
-    return df[["speaker", "text"]]
+    return df
 
 
 def bag_of_words(corpus: list[str] | pd.Series) -> csr_matrix:

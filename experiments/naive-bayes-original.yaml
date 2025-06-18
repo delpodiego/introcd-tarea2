@@ -1,11 +1,11 @@
-experiment_name: naive-bayes-filtered
+experiment_name: naive-bayes-original
 model: naive-bayes
 grid_search:
   alpha: [0.1, 0.5, 1.0]
   fit_prior: [True, False]
 scoring: [f1_macro, accuracy, recall_macro, precision_macro]
 refit: f1_macro
-data: filtered # filtered | candidates | sentences
+data: original
 speakers: 
   - Joe Biden
   - Donald Trump

@@ -1,14 +1,12 @@
 # Importo los módulos a utilizar
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import pandas as pd
 import typer
 import yaml
 from sklearn.model_selection import GridSearchCV
 from typer import Typer
 
-from research.visualizaciones_train_test import pca_line_plot, pca_plot, pie_chart
 from utils.data_clean import clean_text
 from utils.data_splitting import get_train_test
 from utils.data_transformation import (
@@ -20,19 +18,29 @@ from utils.data_transformation import (
 )
 from utils.models import get_model
 from utils.visualization import (
+    pca_line_plot,
+    pca_plot,
+    pie_chart,
     confusion_matrix,
     report_metrics,
     violin_plot_cv_experiments,
 )
 
+
 app = Typer(no_args_is_help=True)
+SPEAKERS = ["Donald Trump", "Joe Biden", "Mike Pence"]
 
 
 @app.command("pca")
 def pca_analysis():
     # %% Se pide 1.1
-    df = transform_speeches(csv_path=r"data/us_2020_election_speeches.csv")
-    df = df[df["speaker"].isin(["Donald Trump", "Joe Biden", "Mike Pence"])]
+    df = transform_speeches(
+        csv_path=r"data/us_2020_election_speeches.csv",
+        speakers=SPEAKERS,
+        per_sentence=False
+    )
+
+    # Separo en train y test
     X_train, X_test, y_train, y_test = get_train_test(df=df)
 
     # %% Se pide 1.2
@@ -47,19 +55,19 @@ def pca_analysis():
 
     # %% Se pide 1.5
     X_train_pca = principal_component_analysis(matrix=X_train_tf_idf, n_components=2)
-    pca_plot(X_train_pca=X_train_pca, y_train=y_train, filename="pca.png")
+    pca_plot(X_train_pca=X_train_pca, y_train=y_train, filename="pca_sin_param.png")
 
-    # TF-IDF con parámetros
+    # TF-IDF con parámetros 1
     _, X_train_tf_idf = tf_idf(
         corpus=X_train, stop_words="english", use_idf=True, ngram_range=(1, 2)
     )
     X_train_pca = principal_component_analysis(matrix=X_train_tf_idf, n_components=2)
-    pca_plot(X_train_pca=X_train_pca, y_train=y_train, filename="pca_con_param_1.png")
+    pca_plot(X_train_pca=X_train_pca, y_train=y_train, filename="pca_con_param.png")
 
     # TF-IDF con parámetros 2
-    _, X_train_tf_idf = tf_idf(corpus=X_train, stop_words="english", ngram_range=(1, 2))
-    X_train_pca = principal_component_analysis(matrix=X_train_tf_idf, n_components=2)
-    pca_plot(X_train_pca=X_train_pca, y_train=y_train, filename="pca_con_param_2.png")
+    # _, X_train_tf_idf = tf_idf(corpus=X_train, stop_words="english", ngram_range=(1, 2))
+    # X_train_pca = principal_component_analysis(matrix=X_train_tf_idf, n_components=2)
+    # pca_plot(X_train_pca=X_train_pca, y_train=y_train, filename="pca_con_param_2.png")
 
     # Varianza a medida que agregamos los 10 componentes principales
     explained_variance_ratio = pca_explained_variance_ratio(
@@ -69,7 +77,7 @@ def pca_analysis():
     pca_line_plot(n_components=10, cumulative_variance=cumulative_variance)
 
 
-@app.command()
+@app.command("run_experiment")
 def run_experiment(
     experiment_path: str = typer.Argument(
         ..., help="Path to the experiment file", exists=True
@@ -78,17 +86,27 @@ def run_experiment(
     with open(experiment_path, "r") as file:
         experiment = yaml.safe_load(file)
 
-    if experiment["data"] == "full":
+    if experiment["data"] == "original":
         df = pd.read_csv(r"data/us_2020_election_speeches.csv")
         df["text"] = clean_text(text=df["text"])
-    else:
-        df = transform_speeches(csv_path="data/us_2020_election_speeches.csv")
-        if experiment["data"] == "filtered":
-            df = df.groupby(df.index).agg(
-                text=("text", " ".join), speaker=("speaker", "first")
-            )
+        df = df[df["speaker"].isin(experiment["speakers"])]
 
-    df = df[df["speaker"].isin(experiment["speakers"])]
+    elif experiment["data"] == "speeches":
+        df = transform_speeches(
+            csv_path=r"data/us_2020_election_speeches.csv",
+            speakers=experiment["speakers"],
+            per_sentence=False
+        )
+
+    elif experiment["data"] == "sentences":
+        df = transform_speeches(
+            csv_path=r"data/us_2020_election_speeches.csv",
+            speakers=experiment["speakers"],
+            per_sentence=True
+        )
+
+    else:
+        raise ValueError("Experimento no configurado en archivo YAML.")
 
     X_train, X_test, y_train, y_test = get_train_test(df=df)
     vectorizer, X_train_tf_idf = tf_idf(
@@ -112,8 +130,7 @@ def run_experiment(
     with open(output_path / "best_params.yaml", "w") as file:
         yaml.dump(grid_search.best_params_, file)
 
-    violin_plot_cv_experiments(grid_search=grid_search)
-    plt.savefig(output_path / "violin_plot.png", bbox_inches="tight")
+    violin_plot_cv_experiments(grid_search=grid_search, filename=f"{output_path}/violin_plot.png")
 
     model = get_model(model_name=experiment["model"], params=grid_search.best_params_)
     model.fit(X_train_tf_idf, y_train)
@@ -139,12 +156,18 @@ def run_experiment(
         yaml.dump(metrics, file)
 
     confusion_matrix(
-        y_true=y_train, y_pred=y_train_pred, title="Confusion matrix train"
+        y_true=y_train,
+        y_pred=y_train_pred,
+        title="Matriz de Confusión en Train",
+        filename=f"{output_path}/conf_matrix_train.png"
     )
-    plt.savefig(output_path / "conf_matrix_train.png")
 
-    confusion_matrix(y_true=y_test, y_pred=y_test_pred, title="Confusion matrix test")
-    plt.savefig(output_path / "conf_matrix_test.png")
+    confusion_matrix(
+        y_true=y_test,
+        y_pred=y_test_pred,
+        title="Matriz de Confusión en Test",
+        filename=f"{output_path}/conf_matrix_test.png"
+    )
 
 
 if __name__ == "__main__":

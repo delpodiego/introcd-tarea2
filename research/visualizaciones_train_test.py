@@ -1,10 +1,25 @@
-# %%
 # import start
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import pandas as pd
-import numpy as np
+# import numpy as np
 # from utils.data_clean import clean_text
+
+
+# Letra para que coincida con LaTex
+plt.rcParams.update(
+    {
+        "font.family": "Latin Modern Roman",
+        "mathtext.fontset": "cm",
+        "figure.titlesize": 18,
+        "axes.titlesize": 16,
+        "axes.labelsize": 14,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 12,
+        "legend.title_fontsize": 16,
+        "legend.fontsize": 14,
+    }
+)
 
 
 def pie_chart(y_train: list, y_test: list):
@@ -47,6 +62,7 @@ def pie_chart(y_train: list, y_test: list):
     fig.tight_layout()
     fig.savefig(fname='img/piechart.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
+
 
 # %%
 # train_clean = clean_text(train, column_name="text")
@@ -169,10 +185,11 @@ def pca_plot(X_train_pca, y_train, filename):
 def pca_line_plot(n_components, cumulative_variance):
     plt.figure(figsize=(8, 6))
     plt.plot(range(1, n_components + 1), cumulative_variance, marker='o', linestyle='-')
-    plt.title("Varianza acumulada por número de componentes PCA")
-    plt.xlabel("Número de componentes principales")
-    plt.ylabel("Varianza acumulada")
+    plt.title("Varianza explicada acumulada por N° de componentes PCA")
+    plt.xlabel("N° de componentes principales")
+    plt.ylabel("Varianza explicada acumulada")
     plt.xticks(range(1, n_components + 1))
-    plt.ylim(0, 1.05)
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
     plt.savefig(fname='img/pca_variance.png', dpi=300, bbox_inches='tight')
     plt.close()

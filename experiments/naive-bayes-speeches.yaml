@@ -1,11 +1,11 @@
-experiment_name: naive-bayes-full
+experiment_name: naive-bayes-speeches
 model: naive-bayes
 grid_search:
   alpha: [0.1, 0.5, 1.0]
   fit_prior: [True, False]
 scoring: [f1_macro, accuracy, recall_macro, precision_macro]
 refit: f1_macro
-data: full
+data: speeches
 speakers: 
   - Joe Biden
   - Donald Trump
