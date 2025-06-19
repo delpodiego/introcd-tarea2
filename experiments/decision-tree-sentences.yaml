@@ -1,0 +1,14 @@
+experiment_name: decision-tree-sentences
+model: decision-tree
+grid_search:
+  criterion: ["gini", "entropy"]
+  max_depth: [10, 25, 50, 100, null]
+  splitter: ["best", "random"]
+  min_samples_split: [2, 5, 10]
+scoring: [f1_macro, accuracy, recall_macro, precision_macro]
+refit: f1_macro
+data: sentences
+speakers: 
+  - Joe Biden
+  - Donald Trump
+  - Mike Pence

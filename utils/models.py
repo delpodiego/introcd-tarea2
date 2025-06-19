@@ -10,10 +10,12 @@ def get_model(
 
     if model_name == "naive-bayes":
         from sklearn.naive_bayes import MultinomialNB
+
         return MultinomialNB(**params)
 
     elif model_name == "decision-tree":
         from sklearn.tree import DecisionTreeClassifier
+
         return DecisionTreeClassifier(**params)
 
     else:

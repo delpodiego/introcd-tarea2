@@ -1,10 +1,11 @@
 # Importo los módulos a utilizar
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import typer
 import yaml
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from typer import Typer
 
 from utils.data_clean import clean_text
@@ -18,14 +19,15 @@ from utils.data_transformation import (
 )
 from utils.models import get_model
 from utils.visualization import (
+    bar_plot_cv_experiments,
+    confusion_matrix,
     pca_line_plot,
     pca_plot,
     pie_chart,
-    confusion_matrix,
     report_metrics,
+    strip_plot_cv_experiments,
     violin_plot_cv_experiments,
 )
-
 
 app = Typer(no_args_is_help=True)
 SPEAKERS = ["Donald Trump", "Joe Biden", "Mike Pence"]
@@ -37,7 +39,7 @@ def pca_analysis():
     df = transform_speeches(
         csv_path=r"data/us_2020_election_speeches.csv",
         speakers=SPEAKERS,
-        per_sentence=False
+        per_sentence=False,
     )
 
     # Separo en train y test
@@ -54,14 +56,14 @@ def pca_analysis():
     _, X_train_tf_idf = tf_idf(corpus=X_train)
 
     # %% Se pide 1.5
-    X_train_pca = principal_component_analysis(matrix=X_train_tf_idf, n_components=2)
+    _, X_train_pca = principal_component_analysis(matrix=X_train_tf_idf, n_components=2)
     pca_plot(X_train_pca=X_train_pca, y_train=y_train, filename="pca_sin_param.png")
 
     # TF-IDF con parámetros 1
     _, X_train_tf_idf = tf_idf(
         corpus=X_train, stop_words="english", use_idf=True, ngram_range=(1, 2)
     )
-    X_train_pca = principal_component_analysis(matrix=X_train_tf_idf, n_components=2)
+    _, X_train_pca = principal_component_analysis(matrix=X_train_tf_idf, n_components=2)
     pca_plot(X_train_pca=X_train_pca, y_train=y_train, filename="pca_con_param.png")
 
     # TF-IDF con parámetros 2
@@ -84,7 +86,7 @@ def run_experiment(
     ),
 ):
     with open(experiment_path, "r") as file:
-        experiment = yaml.safe_load(file)
+        experiment: dict[str, Any] = yaml.safe_load(file)
 
     if experiment["data"] == "original":
         df = pd.read_csv(r"data/us_2020_election_speeches.csv")
@@ -95,14 +97,14 @@ def run_experiment(
         df = transform_speeches(
             csv_path=r"data/us_2020_election_speeches.csv",
             speakers=experiment["speakers"],
-            per_sentence=False
+            per_sentence=False,
         )
 
     elif experiment["data"] == "sentences":
         df = transform_speeches(
             csv_path=r"data/us_2020_election_speeches.csv",
             speakers=experiment["speakers"],
-            per_sentence=True
+            per_sentence=True,
         )
 
     else:
@@ -118,9 +120,13 @@ def run_experiment(
     grid_search = GridSearchCV(
         model,
         param_grid=experiment["grid_search"],
-        cv=5,
+        cv=StratifiedKFold(
+            n_splits=5, shuffle=True, random_state=experiment.get("seed", 42)
+        ),
         scoring=experiment["scoring"],
         refit=experiment["refit"],
+        verbose=2,
+        n_jobs=-1,
     )
     grid_search.fit(X_train_tf_idf, y_train)
     print("Best params: ", grid_search.best_params_)
@@ -131,7 +137,15 @@ def run_experiment(
     with open(output_path / "best_params.yaml", "w") as file:
         yaml.dump(grid_search.best_params_, file)
 
-    violin_plot_cv_experiments(grid_search=grid_search, filename=f"{output_path}/violin_plot.png")
+    violin_plot_cv_experiments(
+        grid_search=grid_search, filename=f"{output_path}/violin_plot.png"
+    )
+    strip_plot_cv_experiments(
+        grid_search=grid_search, filename=f"{output_path}/strip_plot.png"
+    )
+    bar_plot_cv_experiments(
+        grid_search=grid_search, filename=f"{output_path}/bar_plot.png"
+    )
 
     model = get_model(model_name=experiment["model"], params=grid_search.best_params_)
     model.fit(X_train_tf_idf, y_train)
@@ -160,14 +174,14 @@ def run_experiment(
         y_true=y_train,
         y_pred=y_train_pred,
         title="Matriz de Confusión en Train",
-        filename=f"{output_path}/conf_matrix_train.png"
+        filename=f"{output_path}/conf_matrix_train.png",
     )
 
     confusion_matrix(
         y_true=y_test,
         y_pred=y_test_pred,
         title="Matriz de Confusión en Test",
-        filename=f"{output_path}/conf_matrix_test.png"
+        filename=f"{output_path}/conf_matrix_test.png",
     )
 
 

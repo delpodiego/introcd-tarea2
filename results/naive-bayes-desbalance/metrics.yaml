@@ -1,0 +1,10 @@
+test:
+  accuracy: 0.8235294117647058
+  f1_macro: 0.5433333333333333
+  precision_macro: 0.5952380952380952
+  recall_macro: 0.5333333333333333
+train:
+  accuracy: 1.0
+  f1_macro: 1.0
+  precision_macro: 1.0
+  recall_macro: 1.0
