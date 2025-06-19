@@ -166,8 +166,8 @@ def pca_plot(X_train_pca, y_train, filename):
 
     plt.scatter(X_train_pca[:, 0], X_train_pca[:, 1], c=colors, s=80, edgecolors='k')
     plt.title(label="Proyección PCA de vectores TF-IDF sobre conjunto de entrenamiento", pad=20)
-    plt.xlabel(xlabel="PCA 1", labelpad=15)
-    plt.ylabel(ylabel="PCA 2", labelpad=15)
+    plt.xlabel(xlabel="PC1", labelpad=15)
+    plt.ylabel(ylabel="PC2", labelpad=15)
     plt.legend(handles=legend_elements)
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)

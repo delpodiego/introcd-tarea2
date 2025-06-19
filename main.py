@@ -109,6 +109,7 @@ def run_experiment(
         raise ValueError("Experimento no configurado en archivo YAML.")
 
     X_train, X_test, y_train, y_test = get_train_test(df=df)
+
     vectorizer, X_train_tf_idf = tf_idf(
         corpus=X_train, stop_words="english", use_idf=True, ngram_range=(1, 2)
     )
