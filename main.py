@@ -46,6 +46,7 @@ def pca_analysis():
     X_train, X_test, y_train, y_test = get_train_test(df=df)
 
     # %% Se pide 1.2
+    Path("img").mkdir(parents=True, exist_ok=True)
     pie_chart(y_train=y_train, y_test=y_test)
 
     # %% Se pide 1.3

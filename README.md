@@ -1,4 +1,4 @@
-# introcd-tarea2
+# Introducción a la Ciencia de Datos - Tarea 2
 
 Repositorio del grupo 18 del curso IntroCD - Introducción a la Ciencia de Datos.
 
@@ -10,6 +10,15 @@ Este proyecto implementa análisis de datos y modelos de machine learning para c
 - Implementación de modelos de clasificación (Naive Bayes, Decision Trees)
 - Experimentos con diferentes configuraciones de datos y parámetros
 - Visualizaciones y métricas de evaluación
+
+## Prerrequisito
+
+Es necesario tener instalada la fuente *Latin Modern Roman* en el sistema. De no ser así, la misma puede descargarse desde: https://mirror.ctan.org/fonts/lm.zip.
+Para instalar la fuente:
+
+1. Descomprima el ZIP
+2. Ir a `fonts > opentype > public > lm`
+3. Seleccionar todos los archivos, hacer click derecho e instalar.
 
 ## Informes del Proyecto
 
