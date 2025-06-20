@@ -86,7 +86,7 @@ def transform_speeches(
     return df
 
 
-def bag_of_words(corpus: list[str] | pd.Series) -> csr_matrix:
+def bag_of_words(corpus: list[str] | pd.Series) -> tuple[CountVectorizer, csr_matrix]:
     # %% Inicio el vectorizador
     vectorizer = CountVectorizer()
 
@@ -94,7 +94,7 @@ def bag_of_words(corpus: list[str] | pd.Series) -> csr_matrix:
     matrix = vectorizer.fit_transform(corpus)
 
     # %% Objeto devuelto por la función
-    return matrix
+    return vectorizer, matrix
 
 
 def tf_idf(
@@ -102,7 +102,7 @@ def tf_idf(
     stop_words: str | None = None,
     use_idf: bool = False,
     ngram_range: tuple = (1, 1),
-) -> csr_matrix:
+) -> tuple[TfidfVectorizer, csr_matrix]:
     # %% Inicio el vectorizador
     vectorizer = TfidfVectorizer(
         stop_words=stop_words, use_idf=use_idf, ngram_range=ngram_range

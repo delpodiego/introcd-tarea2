@@ -49,8 +49,8 @@ def pca_analysis():
     pie_chart(y_train=y_train, y_test=y_test)
 
     # %% Se pide 1.3
-    X_train_bow = bag_of_words(corpus=X_train)
-    print(X_train_bow.shape)
+    _, X_train_bow = bag_of_words(corpus=X_train)
+    print("Dimensiones de matriz BoW: ", X_train_bow.shape)
 
     # %% Se pide 1.4
     _, X_train_tf_idf = tf_idf(corpus=X_train)

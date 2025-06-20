@@ -198,6 +198,9 @@ def bar_plot_cv_experiments(
     plt.ylim(0, 1.5)
     plt.grid(axis="y", linestyle="--", alpha=0.7)
     plt.legend(title="Métricas")
+    plt.gca().set_axisbelow(True)
+    plt.gca().spines["top"].set_visible(False)
+    plt.gca().spines["right"].set_visible(False)
     plt.tight_layout()
     plt.savefig(fname=filename, bbox_inches="tight")
     plt.close()
@@ -220,9 +223,8 @@ def report_metrics(
 
 
 def confusion_matrix(y_true: list[str], y_pred: list[str], title: str, filename: str):
-    conf_matrix = ConfusionMatrixDisplay.from_predictions(y_true, y_pred, cmap="RdYlGn")
     plt.figure(figsize=(14, 14))
-    conf_matrix.plot()
+    ConfusionMatrixDisplay.from_predictions(y_true, y_pred, cmap="Blues")
     plt.title(label=title, pad=20)
     plt.xticks(rotation=15)
     plt.xlabel(xlabel="Predicción", labelpad=15, fontsize=14)
@@ -233,7 +235,7 @@ def confusion_matrix(y_true: list[str], y_pred: list[str], title: str, filename:
 
 def pie_chart(y_train: list, y_test: list):
     # %% Compare counts
-    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(10, 6))
 
     # Colores por candidato
     speaker_colors = {
@@ -274,7 +276,7 @@ def pie_chart(y_train: list, y_test: list):
 
 
 def pca_plot(X_train_pca, y_train, filename):
-    plt.figure(figsize=(10, 7))
+    plt.figure(figsize=(8, 6))
 
     speaker_colors = {
         "Donald Trump": "#e79c9c",
@@ -337,6 +339,7 @@ def pca_line_plot(n_components, cumulative_variance):
     plt.xticks(range(1, n_components + 1))
     plt.gca().spines["top"].set_visible(False)
     plt.gca().spines["right"].set_visible(False)
+    plt.grid(True)
     plt.tight_layout()
     plt.savefig(fname="img/pca_variance.png", dpi=300, bbox_inches="tight")
     plt.close()
