@@ -25,8 +25,7 @@ Para instalar la fuente:
 Los informes detallados de las tareas se encuentran en el directorio `docs/`:
 
 - **`docs/IntroCD_Tarea1.pdf`** - Informe completo de la Tarea 1
-# TODO: actualizar path al informe 2
-- **`docs/Tarea 2 - Introducción a la Ciencia de Datos.pdf`** - Informe completo de la Tarea 2
+- **`docs/IntroCD_Tarea2.pdf`** - Informe completo de la Tarea 2
 
 ## Estructura del Proyecto
 
